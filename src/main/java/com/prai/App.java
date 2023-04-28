@@ -2,11 +2,13 @@ package com.prai;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import by.borge.jarl.Jarl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+
 /**
  * Hello world!
  *
@@ -32,5 +34,33 @@ public class App
         if (allowed) {
             System.out.println( "Allowed" );
         }
+        String uri="files/upload/updateservice/package";
+        String method = "POST";
+        List<String> roles=Arrays.asList("OmcEquipmentObserver",
+                "CreateJob",
+                "DeleteJob",
+                "OmcEquipmentAdministrator");
+        boolean opadecision=OPADecisionMaker.isAllowed(uri,method,roles);
+        if (opadecision) {
+            System.out.println( "OPA Decision Allowed" );
+        }
+        System.out.println( "******************************************" );
+       List<String> uris=Arrays.asList("/Managers/my-pod/Oem/Ericsson_2/RemoteBackupService/Actions/Ericsson2RemoteBackupService.CreateAndTransferBackup",
+               "/TaskService/Tasks/1/",
+               "/Managers/prai-pod/Oem/Ericsson_2/RemoteBackupService/Actions/Ericsson2RemoteBackupService.CreateAndTransferBackup",
+               "/Managers/vanja-pod/Oem/Ericsson_2/RemoteBackupService/Actions/Ericsson2RemoteBackupService.CreateAndTransferBackup",
+               "files/upload/updateservice/package",
+               "/TaskService/Tasks/3/");
+        String method1 = "GET";
+
+        List<String> allowedUris=OPADecisionMaker.isAllowed(uris,method1,roles);
+        System.out.println( "******************************************" );
+        System.out.println( "" );
+
+
+        allowedUris.forEach(System.out::println);
+        System.out.println( "******************************************" );
+
+
     }
 }
