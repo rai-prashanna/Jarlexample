@@ -13,9 +13,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class OPADecisionMaker {
+//private static String serverIP= "testserver";
+//    private static String serverPort= "32323";
 
-    private static String coarsegrainedendpoint = "http://testserver:32323/v1/data/authz/redfish/v1/policy";
-    private static String finegrainedendpoint = "http://testserver:32323/v1/data/authz/redfish/v1/fine/policy";
+    private static String serverIP= "localhost";
+    private static String serverPort= "8181";
+    private static String coarsegrainedendpoint = "http://"+serverIP+":"+serverPort+"/v1/data/authz/redfish/v1/policy";
+    private static String finegrainedendpoint = "http://"+serverIP+":"+serverPort+"/v1/data/authz/redfish/v1/fine/policy";
 
     public static boolean isAllowed(String uri, String method, List<String> roles) {
         boolean opaDecision;
