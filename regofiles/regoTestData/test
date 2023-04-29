@@ -1,0 +1,23 @@
+/home/epraria/programs/opa_linux_amd64 build -b . -O=1
+
+/home/epraria/programs/opa_linux_amd64 build --target plan --entrypoint authz/redfish/v1/fine/policy/allow .
+
+authz.redfish.v1.fine.policy
+
+/repo/policy/policies/optimized/authz/redfish/v1/fine
+
+
+{
+    "method": "GET",
+    "resources": [
+        "/TaskService/Tasks/1/",
+        "files/upload/updateservice/package",
+        "/TaskService/Tasks/3/"
+    ],
+    "roles": [
+        "OmcEquipmentObserver",
+        "CreateJob",
+        "DeleteJob",
+        "OmcEquipmentAdministrator"
+    ]
+}
