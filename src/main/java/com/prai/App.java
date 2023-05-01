@@ -26,6 +26,8 @@ public class App
             System.out.println( "OPA Decision Allowed" );
         }
 //        System.out.println( "******************************************" );
+
+        List<String> methods  =Arrays.asList("GET","POST","GET","GET","POST","GET");
        List<String> uris=Arrays.asList("/Managers/my-pod/Oem/Ericsson_2/RemoteBackupService/Actions/Ericsson2RemoteBackupService.CreateAndTransferBackup",
                "/TaskService/Tasks/1/",
                "/Managers/prai-pod/Oem/Ericsson_2/RemoteBackupService/Actions/Ericsson2RemoteBackupService.CreateAndTransferBackup",
@@ -46,7 +48,8 @@ public class App
         System.out.println( "The value of decision from Jarl " );
         System.out.println( localDecision );
 
-        OPADecisionMaker.isAllowedJarl(uris,method,roles);
-
+       // OPADecisionMaker.isAllowedJarl(uris,method,roles);
+        OPADecisionMaker.isAllowed(uris,methods,roles);
+        System.out.println("****");
     }
 }
