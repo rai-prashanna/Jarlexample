@@ -18,16 +18,16 @@ public class OPADecisionMaker {
 //private static String serverIP= "testserver";
 //    private static String serverPort= "32323";
 
-    private static String serverIP= "testserver";
-    private static String serverPort= "32323";
-    private static String coarsegrainedendpoint = "http://"+serverIP+":"+serverPort+"/v1/data/authz/redfish/v1/policy";
-    private static String finegrainedendpoint = "http://"+serverIP+":"+serverPort+"/v1/data/authz/redfish/v1/fine/policy";
+    private static final String serverIP= "testserver";
+    private static final String serverPort= "32323";
+    private static final String coarsegrainedendpoint = "http://"+serverIP+":"+serverPort+"/v1/data/authz/redfish/v1/policy";
+    private static final String finegrainedendpoint = "http://"+serverIP+":"+serverPort+"/v1/data/authz/redfish/v1/fine/policy";
 
-    private static String IRFile= "/repo/policy/optimized/authz/redfish/v1/plan.json";
-    private static String entrypoint= "authz/redfish/v1/policy/allow";
-    private static String IRFile2= "/repo/policy/policies/optimized/authz/redfish/v1/fine/plan.json";
+    private static final String IRFile= "/repo/policy/optimized/authz/redfish/v1/plan.json";
+    private static final String entrypoint= "authz/redfish/v1/policy/allow";
+    private static final String IRFile2= "/repo/policy/policies/optimized/authz/redfish/v1/fine/plan.json";
 
-    private static String entrypoint2="authz/redfish/v1/fine/policy/batch_allow";
+    private static final String entrypoint2="authz/redfish/v1/fine/policy/batch_allow";
     public static boolean isAllowed(String uri, String method, List<String> roles) {
         boolean opaDecision;
         ObjectMapper objectMapper = new ObjectMapper();
@@ -74,7 +74,7 @@ public class OPADecisionMaker {
         }
 
     }
-    public static List<String> isAllowed (List < String > uris, String method, List < String > roles){
+    public static List<String> isAllowed (List < String > uris, String  method, List < String > roles){
         List<String> allowedUris = Collections.EMPTY_LIST;
         ObjectMapper objectMapper = new ObjectMapper();
         BulkOPAInput input = new BulkOPAInput();
@@ -164,6 +164,7 @@ public class OPADecisionMaker {
                     .build()
                     .getPlan(entrypoint2)
                     .eval(map, data).getResults();
+
             System.out.println( "test" );
 
         } catch (IOException e) {
@@ -174,5 +175,46 @@ public class OPADecisionMaker {
         }
         return Collections.EMPTY_LIST;
     }
+
+    public static List<String> isAllowed (List < String > uris, List < String >  methods, List < String > roles){
+        List<String> allowedUris = Collections.EMPTY_LIST;
+        ObjectMapper objectMapper = new ObjectMapper();
+        OPAInput1 input = new OPAInput1();
+        input.setMethods(methods);
+        input.setRoles(roles);
+        input.setResources(uris);
+        BulkOPARequest1 opaRequest = new BulkOPARequest1(input);
+
+        HttpClient httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofSeconds(10))
+                .build();
+        BulkOPAResponse response;
+        try {
+            String inputJson = objectMapper.writeValueAsString(opaRequest);
+            System.out.println("OPADecisionMaker BulkInputJSON created .....");
+            System.out.print(inputJson);
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(inputJson))
+                    .uri(URI.create(finegrainedendpoint))
+                    .setHeader("User-Agent", "PRASHANNA")
+                    .build();
+
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            response = objectMapper.readValue(httpResponse.body(), BulkOPAResponse.class);
+            allowedUris = response.getResult().getBatchAllow();
+            System.out.println("OPADecisionMaker Bulk Value of allow .....");
+            System.out.print(allowedUris);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            return allowedUris;
+        }
+    }
+
 
     }
